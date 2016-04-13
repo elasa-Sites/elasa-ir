@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * Definition of Tab Shortcodes
+ */
+
+/**
+ * Implements hook_shortcode_info
+ */
+function _tabs_shortcode_info(&$shortcodes) {
+	$shortcodes['tabs'] = array(
+		'title' => t('Bootstrap Tabs'),
+		'description' => t('Create a tab container'),
+		'process callback' => 'superhero_shortcode_bootstrap_tabs',
+		'tips callback' => 'superhero_shortcode_bootstrap_tabs_tip',
+	);
+	
+	$shortcodes['tab'] = array(
+		'title' => t('Tab Item'),
+		'description' => t('Provides the ability to create tabs within a tab container'),
+		'process callback' => 'superhero_shortcode_bootstrap_tab',
+		'tips callback' => 'superhero_shortcode_bootstrap_tab_tip',
+	);
+	
+	return $shortcodes;
+}
+
+/**
+ * Tabs theme
+ */
+function _tabs_theme(&$themes) {
+	$themes['bootstrap_tabs'] = array(
+		'variables' => array(
+			'class' => 'bootstrap_tabs',
+			'text' => ''
+		),
+	);
+	$themes['bootstrap_tab'] = array();
+}
+
+/**
+ * Bootstrap Tabs Container
+ */
+function superhero_shortcode_bootstrap_tabs($attrs, $text) {
+	$attrs = shortcode_attrs(array(
+			'class' => 'nav-tabs',
+		),
+		$attrs
+	);
+	
+	return '<div class="bootstrap-tabs">' . $text . '</div>';
+}
+
+/**
+ * Theme tabs
+ */
+function theme_bootstrap_tabs($vars) {
+	$class = $vars['class'];
+	$text = $vars['text'];
+	
+	return '<span class="' . $class . '">'. $text . '</span>';
+}
+
+/**
+ * Bootstrap tab
+ */
+function superhero_shortcode_bootstrap_tab($attrs, $text) {	
+	$attrs = shortcode_attrs(array(
+			'state' => '',
+			'title' => '',
+		),
+		$attrs
+	);
+	
+	return '<span class="tab-pane">'.$text.'</span>';	
+}

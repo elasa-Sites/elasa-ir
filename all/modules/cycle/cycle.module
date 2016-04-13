@@ -1,0 +1,745 @@
+<?php
+
+/**
+ * @file
+ * Main file of Cycle module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function cycle_theme() {
+  return array(
+    'cycle' => array(
+      'variables' => array('slides' => array(), 'settings_id' => NULL),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function cycle_field_formatter_info() {
+  return array(
+    'cycle' => array(
+      'label' => t('Cycle', array(), array('context' => 'field formatter name')),
+      'field types' => array(
+        'image',
+        'field_collection',
+        'entityreference',
+      ),
+      'settings' => array(
+        'items_per_slide' => 1,
+        'view_mode' => 'teaser',
+        'navigation' => FALSE,
+        'show_index' => FALSE,
+        'nojs_behaviour' => 'start_slide_only',
+        'reset_on_resize' => FALSE,
+        'slide_on_hover' => FALSE,
+        'slide_on_click' => FALSE,
+        'position_next_prev' => 'below',
+        'hide_next_prev_on_end' => TRUE,
+        'image_style' => 'medium',
+        'link' => FALSE,
+        'link_destination' => 'file',
+        'link_file_style' => 'large',
+        'use_fancybox' => FALSE,
+        'fancybox_grouping' => FALSE,
+        'pager' => FALSE,
+        'use_thumbnail_pager' => FALSE,
+        'pager_thumbnail_field' => '',
+        'pager_thumbnail_style' => 'thumbnail',
+        'cycle_settings' => array(
+          'after' => NULL,
+          'allowPagerClickBubble' => FALSE,
+          'animIn' => NULL,
+          'animOut' => NULL,
+          'autostop' => 0,
+          'autostopCount' => 0,
+          'backwards' => FALSE,
+          'before' => NULL,
+          'cleartype' => '<default>',
+          'cleartypeNoBg' => FALSE,
+          'containerResize' => 1,
+          'continuous' => 0,
+          'cssAfter' => NULL,
+          'cssBefore' => NULL,
+          'delay' => 0,
+          'easeIn' => NULL,
+          'easeOut' => NULL,
+          'easing' => NULL,
+          'end' => NULL,
+          'fastOnEvent' => 0,
+          'fit' => 0,
+          'fx' => 'fade',
+          'fxFn' => NULL,
+          'height' => 'auto',
+          'manualTrump' => TRUE,
+          'metaAttr' => 'cycle',
+          'next' => NULL,
+          'nowrap' => 0,
+          'onPagerEvent' => NULL,
+          'onPrevNextEvent' => NULL,
+          'pager' => NULL,
+          'pagerAnchorBuilder' => NULL,
+          'pagerEvent' => 'click.cycle',
+          'pause' => 0,
+          'pauseOnPagerHover' => 0,
+          'prev' => NULL,
+          'random' => 0,
+          'randomizeEffects' => 1,
+          'requeueOnImageNotLoaded' => TRUE,
+          'requeueTimeout' => 250,
+          'rev' => 0,
+          'shuffle' => NULL,
+          'slideExpr' => NULL,
+          'slideResize' => 1,
+          'speed' => 1000,
+          'speedIn' => NULL,
+          'speedOut' => NULL,
+          'startingSlide' => 0,
+          'sync' => 1,
+          'timeout' => 4000,
+          'timeoutFn' => NULL,
+          'updateActivePagerLink' => NULL,
+          'width' => NULL,
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function cycle_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $summary = array();
+  switch ($field['type']) {
+    case 'image':
+      if ($settings['image_style']) {
+        $image = t('@style-images', array('@style' => $settings['image_style']));
+      }
+      else {
+        $image = t('Original images');
+      }
+      if ($settings['link']) {
+        switch ($settings['link_destination']) {
+          case 'content':
+            $summary[] = t('!image linked with content.', array('!image' => $image));
+            break;
+
+          case 'file':
+            if ($settings['link_file_style']) {
+              $linked_image = t('@style-images', array('@style' => $settings['link_file_style']));
+            }
+            else {
+              $linked_image = t('Original images');
+            }
+            $summary[] = t('!image linked with !linked-image.', array('!image' => $image, '!linked-image' => $linked_image));
+            break;
+        }
+      }
+      else {
+        $summary[] = $image;
+      }
+      break;
+
+    case 'entityreference':
+      $entity_info = entity_get_info('node');
+      $modes = $entity_info['view modes'];
+      $view_mode = $settings['view_mode'] ? $entity_info['view modes'][$settings['view_mode']]['label'] : t('Default');
+      $summary[] = t('Rendered as @mode', array('@mode' => $view_mode));
+      break;
+  }
+  switch ($field['type']) {
+    case 'image':
+      $summary[] = format_plural($settings['items_per_slide'], '1 image per slide', '@count images per slide.');
+      break;
+
+    case 'entityreference':
+      $summary[] = format_plural($settings['items_per_slide'], '1 entity per slide', '@count entities per slide.');
+      break;
+
+    default:
+      $summary[] = format_plural($settings['items_per_slide'], '1 item per slide', '@count items per slide.');
+      break;
+  }
+
+  $behavior_prefix = t('If javascript is not present or not fully loaded:') . ' ';
+  switch ($settings['nojs_behaviour']) {
+    case 'start_slide_only':
+      $summary[] = $behavior_prefix . t('Showing the first slide only.');
+      break;
+
+    case 'show_all_slides':
+      $summary[] = $behavior_prefix . t('Showing all slides.');
+      break;
+  }
+
+  return implode('<br />', $summary);
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function cycle_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $element = array();
+
+  if ($field['type'] == 'node_reference' || $field['type'] == 'entityreference' || $field['type'] == 'field_collection') {
+    $entity_info = entity_get_info('node');
+    $modes = $entity_info['view modes'];
+    $options = array(
+      0 => t('Default'),
+    );
+
+    foreach ($modes as $name => $mode) {
+      $options[$name] = $mode['label'];
+    }
+
+    $element['view_mode'] = array(
+      '#title' => t('View mode'),
+      '#type' => 'select',
+      '#options' => $options,
+      '#default_value' => $settings['view_mode'],
+      // Never empty, so no #empty_option
+    );
+  }
+  elseif ($field['type'] == 'image') {
+    $image_styles = image_style_options(FALSE);
+
+    $element['image_style'] = array(
+      '#title' => t('Style of the image'),
+      '#type' => 'select',
+      '#default_value' => $settings['image_style'],
+      '#empty_option' => t('None (original image)'),
+      '#options' => $image_styles,
+    );
+
+    $element['link'] = array(
+      '#title' => t('Link'),
+      '#type' => 'checkbox',
+      '#default_value' => $settings['link'],
+    );
+
+    $element['link_destination'] = array(
+      '#title' => t('Link to'),
+      '#type' => 'select',
+      '#default_value' => $settings['link_destination'],
+      '#options' => array(
+        'file' => t('File'),
+        'content' => t('Content'),
+      ),
+      '#states' => array(
+        'invisible' => array(
+          'input[name$="[link]"]' => array('checked' => FALSE),
+        ),
+      ),
+    );
+
+    $element['link_file_style'] = array(
+      '#title' => t('Style of the linked image'),
+      '#type' => 'select',
+      '#default_value' => $settings['link_file_style'],
+      '#options' => $image_styles,
+      '#empty_option' => t('None (original image)'),
+      '#states' => array(
+        'visible' => array(
+          'select[name$="[link_destination]"]' => array('value' => 'file'),
+          'input[name$="[link]"]' => array('checked' => TRUE),
+        ),
+      ),
+    );
+
+    // @TODO: Add support for colorbox module.
+    if (module_exists('fancybox')) {
+      $element['use_fancybox'] = array(
+        '#title' => t('Use fancybox'),
+        '#type' => 'checkbox',
+        '#description' => t('You can change the appearence of the fancybox on its <a href="!link">fancybox configuation page</a>.', array('!link' => url('admin/config/user-interface/fancybox'))),
+        '#default_value' => $settings['use_fancybox'],
+        '#states' => array(
+          'visible' => array(
+            'select[name$="[link_destination]"]' => array('value' => 'file'),
+          ),
+        ),
+      );
+      $element['fancybox_grouping'] = array(
+        '#title' => t('Group images in fancybox'),
+        '#type' => 'checkbox',
+        '#description' => t('This enables a pager to swich between the Images'),
+        '#default_value' => $settings['fancybox_grouping'],
+        '#states' => array(
+          'visible' => array(
+            'input[name$="[use_fancybox]"]' => array('checked' => TRUE),
+          ),
+        ),
+      );
+    }
+  }
+
+  if ($display['type'] == 'cycle') {
+
+    switch ($field['type']) {
+      case 'image':
+        $items_per_slide_label = t('Images per slide');
+        break;
+
+      case 'entityreference':
+        $items_per_slide_label = t('Entities per slide');
+        break;
+
+      default:
+        $items_per_slide_label = t('Items per slide');
+        break;
+    }
+
+    $element['items_per_slide'] = array(
+      '#title' => $items_per_slide_label,
+      '#type' => 'textfield',
+      '#size' => 3,
+      '#default_value' => $settings['items_per_slide'],
+      '#element_validate' => array('element_validate_integer_positive'),
+      '#required' => TRUE,
+    );
+
+    $element['navigation'] = array(
+      '#title' => t('Navigation'),
+      '#type' => 'checkbox',
+      '#default_value' => $settings['navigation'],
+    );
+
+    $element['position_next_prev'] = array(
+      '#title' => t('Position of the prev and next links'),
+      '#type' => 'select',
+      '#default_value' => $settings['position_next_prev'],
+      '#options' => array(
+        'top' => t('Top'),
+        'bottom' => t('Bottom'),
+        'around_horizontal' => t('Left and Right'),
+        'around_vertical' => t('Top and bottom'),
+      ),
+      '#states' => array(
+        'invisible' => array(
+          'input[name$="[navigation]"]' => array('checked' => FALSE),
+        ),
+      ),
+    );
+
+    $element['hide_next_prev_on_end'] = array(
+      '#title' => t('Hide prev and next-buttons at the ends'),
+      '#type' => 'checkbox',
+      '#default_value' => $settings['hide_next_prev_on_end'],
+      '#states' => array(
+        'invisible' => array(
+          'input[name$="[navigation]"]' => array('checked' => FALSE),
+        ),
+      ),
+    );
+
+    $element['show_index'] = array(
+      '#title' => t('Show index'),
+      '#description' => t('Show the index of the current slide'),
+      '#type' => 'checkbox',
+      '#default_value' => $settings['show_index'],
+    );
+
+    $element['pager'] = array(
+      '#title' => t('Show pager'),
+      '#type' => 'checkbox',
+      '#default_value' => $settings['pager'],
+    );
+
+    if ($field['type'] == 'field_collection' && count(cycle_get_field_collection_image_field($field['field_name']))) {
+      $element['use_thumbnail_pager'] = array(
+        '#title' => t('Use a thumbnail for the pager'),
+        '#type' => 'checkbox',
+        '#default_value' => $settings['use_thumbnail_pager'],
+        '#states' => array(
+          'invisible' => array(
+            // @TODO: Doesn't work.
+            'input[name$="[items_per_slide]"]' => array('value' != 1),
+          ),
+        ),
+      );
+
+      $element['pager_thumbnail_field'] = array(
+        '#title' => t('Field for the pager thumbnail'),
+        '#type' => 'select',
+        '#default_value' => $settings['pager_thumbnail_field'],
+        '#options' => cycle_get_field_collection_image_field($field['field_name']),
+        '#states' => array(
+          'visible' => array(
+            'input[name$="[use_thumbnail_pager]"]' => array('checked' => TRUE),
+          ),
+        ),
+      );
+
+      $element['pager_thumbnail_style'] = array(
+        '#title' => t('Style of the pager thumbnail'),
+        '#type' => 'select',
+        '#default_value' => $settings['pager_thumbnail_style'],
+        '#options' => image_style_options(),
+        '#states' => array(
+          'visible' => array(
+            'input[name$="[use_thumbnail_pager]"]' => array('checked' => TRUE),
+          ),
+        ),
+      );
+    }
+
+    $element['cycle_settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Cycle settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+
+    $element['cycle_settings']['fx'] = array(
+      '#type' => 'select',
+      '#title' => t('Effect'),
+      '#default_value' => $settings['cycle_settings']['fx'],
+      '#options' => array(
+        '<default>' => t('Default'),
+        'none' => t('none'),
+        'blindX' => t('Blind X'),
+        'blindY' => t('Blind Y'),
+        'blindZ' => t('Blind Z'),
+        'cover' => t('Cover'),
+        'curtainX' => t('Curtain X'),
+        'curtainY' => t('Curtain Y'),
+        'fade' => t('Fade'),
+        'fadeZoom' => t('Fade Zoom'),
+        'growX' => t('Grow vertically'),
+        'growY' => t('Grow horizonatlly'),
+        'scrollUp' => t('Scroll up'),
+        'scrollDown' => t('Scroll down'),
+        'scrollLeft' => t('Scroll left'),
+        'scrollRight' => t('Scroll right'),
+        'scrollHorz' => t('Scroll horizontal'),
+        'scrollVert' => t('Scroll vertical'),
+        'shuffle' => t('Shuffle'),
+        'slideX' => t('Slide vertical'),
+        'slideY' => t('Slide horizontal'),
+        'toss' => 'toss',
+        'turnUp' => 'turnUp',
+        'turnDown' => 'turnDown',
+        'turnLeft' => 'turnLeft',
+        'turnRight' => 'turnRight',
+        'uncover' => 'uncover',
+        'wipe' => t('Wipe'),
+        'zoom' => t('Zoom'),
+      ),
+    );
+
+    $element['cycle_settings']['timeout'] = array(
+      '#title' => t('Timeout'),
+      '#type' => 'textfield',
+      '#size' => 3,
+      '#default_value' => $settings['cycle_settings']['timeout'],
+      '#element_validate' => array('element_validate_integer'),
+      '#description' => t('Milliseconds between slide transitions. 0 to disable auto advance.'),
+    );
+
+    $element['cycle_settings']['height'] = array(
+      '#title' => t('Height'),
+      '#type' => 'textfield',
+      '#size' => 4,
+      '#default_value' => $settings['cycle_settings']['height'],
+      // @TODO: Own validate function to check for positive integer and 'auto'.
+      // '#element_validate' => array('element_validate_integer_positive'),
+      '#field_suffix' => 'px',
+    );
+
+    $element['cycle_settings']['width'] = array(
+      '#title' => t('Width'),
+      '#type' => 'textfield',
+      '#size' => 4,
+      '#default_value' => $settings['cycle_settings']['width'],
+      // @TODO: Own validate function to check for positive integer and 'auto'.
+      // '#element_validate' => array('element_validate_integer_positive'),
+      '#field_suffix' => 'px',
+    );
+
+    $element['cycle_settings']['startingSlide'] = array(
+      '#title' => t('Starting slide'),
+      '#type' => 'textfield',
+      '#size' => 3,
+      '#description' => t('Zero-based index of the first slide to be displayed.'),
+      '#default_value' => $settings['cycle_settings']['startingSlide'],
+      '#element_validate' => array('element_validate_integer'),
+    );
+
+    $element['cycle_settings']['fit'] = array(
+      '#title' => t('Fit'),
+      '#type' => 'checkbox',
+      '#default_value' => $settings['cycle_settings']['fit'],
+      '#description' => t('Force slides to fit container.'),
+    );
+
+    $element['cycle_settings']['random'] = array(
+      '#title' => t('Random'),
+      '#type' => 'checkbox',
+      '#default_value' => $settings['cycle_settings']['random'],
+      '#description' => t('Puts slides into a random order.'),
+    );
+
+    $element['cycle_settings']['cleartype'] = array(
+      '#title' => t('ClearType'),
+      '#type' => 'select',
+      '#options' => array(
+        // @TODO: Use '' or '_none' instead of '<default>'.
+        '<default>' => t('If necessary.'),
+        0 => t('No'),
+        1 => t('Yes'),
+      ),
+      '#default_value' => $settings['cycle_settings']['cleartype'],
+      '#description' => t('Check if ClearType corrections should be applied for Internet Explorer.'),
+    );
+
+    $element['cycle_settings']['cleartypeNoBg'] = array(
+      '#title' => t('Disable ClearType-Background'),
+      '#type' => 'checkbox',
+      '#default_value' => $settings['cycle_settings']['cleartypeNoBg'],
+      '#description' => t('Check to disable extra cleartype fixing. Leave unchecked to force background color setting on slides.'),
+    );
+
+    $element['cycle_settings']['manualTrump'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Manual Trumb'),
+      '#default_value' => $settings['cycle_settings']['manualTrump'],
+      '#description' => t('Causes manual transition to stop an active transition instead of being ignored.'),
+    );
+  }
+
+  $element['nojs_behaviour'] = array(
+    '#title' => t('Non-Javascript fallback'),
+    '#type' => 'select',
+    '#description' => t("Defines what happens if javascript isn't present."),
+    '#default_value' => $settings['nojs_behaviour'],
+    '#options' => array(
+      'start_slide_only' => t('Show only the starting slide'),
+      'show_all_slides' => t('Show all slides'),
+      // @TODO: Another option to load only the starting slide and
+      // load other slides only if javascript is enabled.
+    ),
+  );
+
+  $element['reset_on_resize'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Reset on resize.'),
+    '#description' => t('Reset slideshow on window resize.'),
+    '#default_value' => $settings['reset_on_resize'],
+  );
+
+  $element['slide_on_hover'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Slide on hover.'),
+    '#description' => t('Slide only on hover.'),
+    '#default_value' => $settings['slide_on_hover'],
+  );
+
+  $element['slide_on_click'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Slide on click.'),
+    '#default_value' => $settings['slide_on_click'],
+  );
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function cycle_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $settings = $display['settings'];
+  $type = $field['type'];
+
+  $element = array('#theme' => 'cycle');
+  $starting_slide = $settings['cycle_settings']['startingSlide'];
+
+  // Clean up cycle settings to allow default setting.
+  $default_values = cycle_field_formatter_info();
+  $default_values = $default_values['cycle']['settings']['cycle_settings'];
+  foreach (element_children($settings['cycle_settings']) as $key) {
+
+    if ($settings['cycle_settings'][$key] == $default_values[$key] || $settings['cycle_settings'][$key] === '<default>' || $settings['cycle_settings'][$key] === '') {
+      unset($settings['cycle_settings'][$key]);
+    }
+    elseif (is_numeric($settings['cycle_settings'][$key])) {
+      $settings['cycle_settings'][$key] = (int) $settings['cycle_settings'][$key];
+    }
+  }
+
+  // Use static variable.
+  if (!isset($GLOBALS['settings_counter'])) {
+    $GLOBALS['settings_counter'] = 0;
+  }
+
+  $GLOBALS['settings_counter']++;
+
+  // @TODO: Use static variable.
+  $settings_id = 'cycle-' . $GLOBALS['settings_counter'];
+
+  $element['#settings_id'] = $settings_id;
+
+  $i = 0;
+  $slidenumber = 0;
+  foreach ($items as $item) {
+    if (!($i % $settings['items_per_slide'])) {
+      $slidenumber++;
+      $i = 0;
+    }
+
+    if ($settings['link']) {
+
+      $style_name = isset($settings['link_file_style']) ? $settings['link_file_style'] : 0;
+
+      if ($style_name) {
+        $style_path = image_style_path($style_name, $item['uri']);
+        if (!file_exists($style_path)) {
+          $style_path = image_style_url($style_name, $item['uri']);
+        }
+      }
+      else {
+        $style_path = file_create_url($item['uri']);
+      }
+      $link_path = file_create_url($style_path);
+
+      $link_options = array('html' => TRUE);
+
+      if ($settings['use_fancybox'] && module_exists('fancybox')) {
+        $fancybox_settings = variable_get('fancybox_settings', array());
+        fancybox_activate($fancybox_settings);
+
+        $link_options['attributes']['class'] = array('imagefield-fancybox');
+        if ($settings['fancybox_grouping']) {
+          $group_id = 'group-' . $variables['#entity_type'] . '-' . $variables['#entity']->nid;
+          $link_options['attributes']['rel'] = $group_id;
+        }
+      }
+    }
+
+    if (!isset($element['#slides'][$slidenumber])) {
+      $element['#slides'][$slidenumber]['#markup'] = '';
+    }
+
+    switch ($type) {
+      case 'image':
+        if ($settings['image_style']) {
+          $image = theme('image_style', array('path' => $item['uri'], 'style_name' => $settings['image_style']));
+        }
+        else {
+          $image = theme('image', array('path' => $item['uri']));
+        }
+
+        if (isset($link_path)) {
+          $element['#slides'][$slidenumber]['#markup'] .= l($image, $link_path, $link_options);
+        }
+        else {
+          $element['#slides'][$slidenumber]['#markup'] .= $image;
+        }
+
+        break;
+
+      case 'entityreference':
+        $entity_type = $field['settings']['target_type'];
+        $info = entity_get_info($entity_type);
+        $entity_id = $item['target_id'];
+
+        $entities = entity_load($entity_type, array($entity_id));
+
+        $element['#slides'][$slidenumber]['#markup'] .= drupal_render(entity_view($entity_type, $entities, $settings['view_mode'], $langcode));
+        break;
+
+      case 'field_collection':
+        $entity = field_collection_item_load($item['value']);
+        $view_mode = !empty($settings['view_mode']) ? $settings['view_mode'] : 'full';
+        $entity_display = $entity->view($view_mode);
+        $element['#slides'][$slidenumber]['#markup'] .= drupal_render($entity_display);
+        if ($settings['use_thumbnail_pager'] && isset($settings['pager_thumbnail_field'])) {
+          $thumbnail_url = array();
+          $images = field_get_items('field_collection_item', $entity, $settings['pager_thumbnail_field']);
+          foreach ($images as $image) {
+            $image_uri = $image['uri'];
+            $thumbnail_url[] = $settings['pager_thumbnail_style'] ? image_style_url($settings['pager_thumbnail_style'], $image_uri) : file_create_url($image_uri);
+          }
+          $settings['cycle_settings']['pager_thumbnails'] = $thumbnail_url;
+        }
+        break;
+    }
+
+    if ($settings['nojs_behaviour'] == 'start_slide_only') {
+      foreach (element_children($element['#slides']) as $key) {
+        $element['#slides'][$key]['#initally-hidden'] = $starting_slide != ($key - 1) ? TRUE : FALSE;
+      }
+    }
+
+    $element['#attached'] = array(
+      'css' => array(drupal_get_path('module', 'cycle') . '/stylesheets/drupal-cycle.css'),
+      'js' => array(drupal_get_path('module', 'cycle') . '/cycle.js'),
+    );
+
+
+    drupal_add_library('jquery_plugin', 'cycle');
+    drupal_add_js(array('cycle' => array($settings_id => $settings)), 'setting');
+
+    $i++;
+  }
+  return $element;
+
+}
+
+/**
+ * Function which return all image fields within a field collection.
+ *
+ * @param string $field_name
+ *   The name of the field collection field.
+ *
+ * @return array
+ *   An array with all image field names.
+ */
+function cycle_get_field_collection_image_field($field_name) {
+  $fields = field_info_instances('field_collection_item', $field_name);
+
+  $output = array();
+  foreach ($fields as $field) {
+    $field_info = field_info_field($field['field_name']);
+    if ($field_info['type'] == 'image') {
+      $output[$field['field_name']] = $field['label'];
+    }
+  }
+  return $output;
+}
+
+/**
+ * Theme function for a single slideshow.
+ *
+ * @param array $variables
+ *   An array with all variables for the theme function.
+ *
+ * @return string
+ *   The rendered html.
+ */
+function theme_cycle($variables) {
+  $slides = $variables['slides'];
+  $settings_id = $variables['settings_id'];
+
+  $output = '';
+  $i = 1;
+  foreach ($slides as $slide) {
+    $class = 'slide';
+    if (isset($slide['#initally-hidden']) && $slide['#initally-hidden'] == TRUE) {
+      $class .= ' initially-hidden';
+    }
+    $output .= '<div class="' . $class . '">' . $slide['#markup'] . '</div>';
+    $i++;
+  }
+
+  return '<div class="cycle" data-cycle-setting="' . $settings_id . '">' . $output . '</div>';
+}

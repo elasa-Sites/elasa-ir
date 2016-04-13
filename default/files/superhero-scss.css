@@ -1,0 +1,18 @@
+body, p, div, span, td {
+  color: #b50909;
+}
+.body a {
+  color: #f70303;
+}
+.link-bg:hover, .link-bg a:hover {
+  background-color: #f70303;
+}
+.body a:hover {
+  color: #197316;
+}
+h1, h2, h3, h4, h5, h6 {
+  color: #800808;
+}
+.body h2 a {
+  color: #800808;
+}

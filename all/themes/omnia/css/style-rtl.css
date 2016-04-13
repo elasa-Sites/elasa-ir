@@ -1,0 +1,150 @@
+
+@font-face {
+    font-family: 'BYekan';
+    src: url('fonts/BYekan.eot');
+    src: url('fonts/BYekan.eot?#iefix') format('embedded-opentype'),
+         url('fonts/BYekan.woff') format('woff'),
+         url('fonts/BYekan.ttf') format('truetype'),
+         url('fonts/BYekan.svg#webfontuploaded_file') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+.blog-date {
+    visibility: hidden;
+}
+.row .cat-title {float: right !important;
+}
+
+.row .col-lg-4 {
+    float: right;
+}
+.field-type-taxonomy-term-reference {
+    float: right !important;
+    margin: 0% 7px;
+}
+.col-md-8 {
+    float: right !important;
+}
+.region-content {
+    float: right !important;
+}
+.item-list{
+float: right;  direction: rtl
+}
+#block-superhero-dropdown-superhero-dropdown-block-1 .expanded {
+    float: right !important;
+}
+.menu .first .leaf {
+    float: right;
+	
+}
+
+.slide-item-wrap .left {
+    float: right;
+    padding: 1px 61px 0px 21px;
+    margin: -3px;
+}
+.slide-item-wrap .user-social {
+    float: right;
+    padding: 1px 61px 0px 21px;
+    margin: -3px;
+    text-align: right;
+    direction: rtl;
+}
+
+
+
+.slide-item-wrap .field .field-items {
+    float: right;
+    text-align: right;
+}
+.view-content {
+    direction: ltr;
+}
+.blog-title {
+    text-align: right;
+}
+
+.view-id-blog .views-field-title {
+    text-align: right;
+}
+.blog-content .field-item {
+    text-align: right;
+}
+.row .block-title {
+    
+    display: flex;
+}
+body{
+	font-family: 'Open Sans', sans-serif;
+}
+.container {
+    max-width: 1170px;
+}
+
+@font-face {
+    font-family: 'opensans-regular-webfont';
+    src: url('../fonts/opensans-regular-webfont.eot');
+    src: url('../fonts/opensans-regular-webfont.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/opensans-regular-webfont.woff') format('woff'),
+        url('../fonts/opensans-regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'opensans-light-webfont';
+    src: url('../fonts/opensans-light-webfont.eot');
+    src: url('../fonts/opensans-light-webfont.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/opensans-light-webfont.woff') format('woff'),
+        url('../fonts/opensans-light-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'opensans-bold-webfont';
+    src: url('../fonts/opensans-bold-webfont.eot');
+    src: url('../fonts/opensans-bold-webfont.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/opensans-bold-webfont.woff') format('woff'),
+        url('../fonts/opensans-bold-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Novecentowide-Normal-webfont';
+    src: url('../fonts/Novecentowide-Normal-webfont.eot');
+    src: url('../fonts/Novecentowide-Normal-webfont.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/Novecentowide-Normal-webfont.woff') format('woff'),
+        url('../fonts/Novecentowide-Normal-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Novecentowide-Medium-webfont';
+    src: url('../fonts/Novecentowide-Medium-webfont.eot');
+    src: url('../fonts/Novecentowide-Medium-webfont.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/Novecentowide-Medium-webfont.woff') format('woff'),
+        url('../fonts/Novecentowide-Medium-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Novecentowide-Light-webfont';
+    src: url('../fonts/Novecentowide-Light-webfont.eot');
+    src: url('../fonts/Novecentowide-Light-webfont.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/Novecentowide-Light-webfont.woff') format('woff'),
+        url('../fonts/Novecentowide-Light-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'MontserratRegular';
+    src: url('../fonts/MontserratRegular.eot');
+    src: url('../fonts/MontserratRegular.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/MontserratRegular.woff') format('woff'),
+        url('../fonts/MontserratRegular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+

@@ -1,0 +1,64 @@
+.nav-sprite, .cycle-pager li, .cycle-pager li.active, .cycle-next, .cycle-prev {
+  background: url('../images/nav-se0c888a142.png') no-repeat;
+}
+
+.cycle-next, .cycle-prev, .cycle-pager li {
+  overflow: hidden;
+  text-indent: 100%;
+  white-space: nowrap;
+  z-index: 10;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.cycle-next, .cycle-prev {
+  position: absolute;
+  top: 50%;
+}
+
+.cycle-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.cycle-pager {
+  position: absolute;
+  z-index: 10;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+.cycle-pager li {
+  margin: .5em;
+  display: inline-block;
+  background-position: 0 0;
+  height: 13px;
+  width: 13px;
+}
+.cycle-pager li.active {
+  background-position: 0 -81px;
+  height: 13px;
+  width: 13px;
+}
+
+.cycle-next {
+  right: 1em;
+  background-position: 0 -13px;
+  height: 34px;
+  width: 22px;
+}
+
+.cycle-prev {
+  left: 1em;
+  background-position: 0 -47px;
+  height: 34px;
+  width: 22px;
+}
+
+html:not(.js) .cycle > .slide.initially-hidden {
+  display: none;
+}

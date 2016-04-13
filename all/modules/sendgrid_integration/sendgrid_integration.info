@@ -1,0 +1,16 @@
+name = SendGrid Integration
+description = Provides sendgrid support
+
+core = 7.x
+package = Mail
+
+configure = admin/config/system/sendgrid
+
+files[] = inc/sendgrid.mail.inc
+
+; Information added by Drupal.org packaging script on 2014-10-02
+version = "7.x-1.0-alpha2+2-dev"
+core = "7.x"
+project = "sendgrid_integration"
+datestamp = "1412248436"
+

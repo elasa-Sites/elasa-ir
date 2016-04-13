@@ -1,0 +1,15 @@
+name = Datex API
+description = Provides API for converting Gregorian calendar dates to Jalali.
+package = Date/Time
+core = 7.x
+
+;files
+files[] = datex_api.class.inc
+
+
+; Information added by Drupal.org packaging script on 2014-08-13
+version = "7.x-2.0-alpha3+3-dev"
+core = "7.x"
+project = "datex"
+datestamp = "1407956328"
+

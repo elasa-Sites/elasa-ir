@@ -1,0 +1,58 @@
+$nav-sprite-dimensions:true;
+@import "nav/*.png";
+@import "compass/css3/user-interface";
+
+%cycle-ctl {
+  overflow: hidden;
+  text-indent: 100%;
+  white-space: nowrap;
+  z-index: 10;
+  cursor: pointer;
+  @include user-select(none);
+}
+
+%cycle-nav {
+  @extend %cycle-ctl;
+  position: absolute;
+  top: 50%;
+}
+
+.cycle-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.cycle-pager {
+  position: absolute;
+  z-index: 10;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  li {
+    margin: .5em;
+    @extend %cycle-ctl;
+    display: inline-block;
+    @include nav-sprite(bullet);
+    &.active {
+      @include nav-sprite(dot);
+    }
+  }
+}
+
+.cycle-next {
+  @extend %cycle-nav;
+  right: 1em;
+  @include nav-sprite(ltr);
+}
+
+.cycle-prev {
+  @extend %cycle-nav;
+  left: 1em;
+  @include nav-sprite(rtl);
+}
+
+html:not(.js) .cycle > .slide.initially-hidden {
+  display: none;
+}

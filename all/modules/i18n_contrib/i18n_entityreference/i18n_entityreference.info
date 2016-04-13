@@ -1,0 +1,19 @@
+name = Synchronize entity references
+description = Synchronizes entity reference fields across translations of the same content.
+dependencies[] = i18n_sync
+dependencies[] = translation
+dependencies[] = entityreference
+
+package = Multilingual - Internationalization
+
+version = "7.x-1.x"
+core = "7.x"
+project = "i18n_contrib"
+
+
+; Information added by drupal.org packaging script on 2013-09-30
+version = "7.x-1.0-alpha2+0-dev"
+core = "7.x"
+project = "i18n_contrib"
+datestamp = "1380582456"
+

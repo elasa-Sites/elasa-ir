@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function datex_install() {
+  // To run before schedule module.
+  db_update('system')
+    ->fields(array('weight' => 100))
+    ->condition('name', 'datex', '=')
+    ->execute();
+
+
+  module_load_include('module', 'datex_api', 'datex_api');
+
+  // So names are picked up by translation function: t.
+  datex_get_all_dummy_names();
+
+  // Set some default config variables.
+  $vars['default']['fa'] = 'jalali';
+  variable_set('datex_schema', $vars);
+
+  $vars = array(
+    'mode' => 2,
+    'useintl' => 0,
+    'node_fmt' => 'D, m/d/Y - H:i',
+    'comment_fmt' => 'D, m/d/Y - H:i',
+  );
+
+  variable_set('datex_config', $vars);
+}
+
+function datex_uninstall() {
+  foreach (array('datex_schema', 'datex_config') as $var) {
+    variable_del($var);
+  }
+}
+

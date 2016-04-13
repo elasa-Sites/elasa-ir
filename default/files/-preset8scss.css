@@ -1,0 +1,21 @@
+body, p, div, span, td {
+  color: #666;
+}
+.body a {
+  color: #942e8f;
+}
+.link-bg:hover, .link-bg a:hover {
+  background-color: #942e8f;
+}
+.tb-megamenu .nav li.dropdown.active > .dropdown-toggle, .tb-megamenu .nav li.dropdown.open.active > .dropdown-toggle, .tb-megamenu .nav > li.dropdown.open.active > a:hover, .tb-megamenu .nav > li > a:focus, .tb-megamenu .nav > li > a:hover, .tb-megamenu .nav li.dropdown.open > .dropdown-toggle, .tb-megamenu .dropdown-menu li > a:hover, .tb-megamenu .dropdown-menu li > a:focus, .tb-megamenu .dropdown-submenu:hover > a, .tb-megamenu .dropdown-menu .active > a, .tb-megamenu .dropdown-menu .active > a:hover {
+  color: #942e8f;
+}
+.body a:hover {
+  color: #461644;
+}
+h1, h2, h3, h4, h5, h6 {
+  color: #666;
+}
+.body h2 a {
+  color: #666;
+}

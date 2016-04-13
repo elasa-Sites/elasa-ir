@@ -1,0 +1,110 @@
+<?php
+/**
+ * @file
+ * Drupal module. Synchronize entityreference fields.
+ *
+ * See http://drupal.org/node/1688156
+ *
+ * Entity types in general do not have different id's as they normally use entity translation (if enabled)
+ * It looks like the following special cases exist, where we have to lookup a related id
+ *  - Node using node translation (when using normal node translation)
+ *  - Taxonomy using  "Translate"-mode
+ * All other seems to have only one ID over translations:
+ *  - Node using entity translation
+ *  - User
+ */
+
+/**
+ * Implements hook_field_info_alter().
+ */
+function i18n_entityreference_field_info_alter(&$fields) {
+  if (isset($fields['entityreference'])) {
+    $fields['entityreference']['i18n_sync_callback'] = 'i18n_entityreference_field_entityreference_sync';
+  }
+}
+
+/**
+ * Sync a entity reference field (i18n_sync_callback)
+ */
+function i18n_entityreference_field_entityreference_sync($entity_type, $entity, $field, $instance, $langcode, &$items, $source_entity, $source_language) {
+  foreach ($items as $delta => &$reference) {
+    if ($reference_node = entity_load_single($field['settings']['target_type'], $reference['target_id'])) {
+      $reference['target_id'] = i18n_entityreference_entityreference_translate_field($reference_node, $reference['target_id'], $langcode);
+    }
+  }
+}
+
+/**
+ * Helper function for translating entity reference field.
+ *
+ * We try to use translations of referenced entity, otherwise fallback to default value.
+ */
+function i18n_entityreference_entityreference_translate_field(&$reference_node, $default_value, $langcode) {
+  if (!empty($reference_node->tnid) && !empty($reference_node->type) && translation_supported_type($reference_node->type)) {
+    /**
+     * Node translation
+     * Translation node id exists and node type is in "content translations" mode.
+     * Load translations and return the nid of the related language.
+     */
+    if (($reference_trans = translation_node_get_translations($reference_node->tnid)) && isset($reference_trans[$langcode])) {
+      return $reference_trans[$langcode]->nid;
+    }
+    else {
+      // TODO: not sure if it ever gets in here and if we should return this.
+      // No requested language found, just copy the field.
+      return $default_value;
+    }
+  }
+  else if (!empty($reference_node->tid) ){
+    // Handle taxonomy entity type
+    if ($translation = i18n_taxonomy_term_get_translation($reference_node, $langcode)) {
+      return $translation->tid;
+    }
+  }
+  else {
+    /** Everything else should just give back the default_value.
+     *   TODO: I don't think user translations over different uid's exist. I only know entity translation on user.
+     * - User entity type
+     * - Content type without language
+     */
+    return $default_value;
+  }
+}
+
+
+/**
+ * Implements hook_field_attach_prepare_translation_alter().
+ *
+ * The code base of this function was taken from the sandbox module
+ * -> http://drupal.org/sandbox/svendecabooter/1736970
+ * Improved it to work on all entities and reusing the already implemented helper function above.
+ *
+ * Loops over all available fields on the to-be-translated entity
+ * and finds entity_reference fields.
+ * If found, adds a reference to the translated entity, or removes reference if not.
+ */
+function i18n_entityreference_field_attach_prepare_translation_alter(&$entity, $context) {
+
+  $entity_type = $context['entity_type'];
+  $source_entity = $context['source_entity'];
+
+  // Determine the list of instances to iterate on.
+  list(, , $bundle) = entity_extract_ids($entity_type, $source_entity);
+  $instances = field_info_instances($entity_type, $bundle);
+  if (!empty($instances)) {
+    foreach($instances as $field_info) {
+      $field = field_info_field($field_info['field_name']);
+      if ($field['type'] == 'entityreference' && isset($entity->{$field_info['field_name']})) {
+        // iterate over languages.
+        foreach($entity->{$field_info['field_name']} as $language => &$items) {
+          // $reference called by reference, to simplify code
+          foreach ($items as $index => &$reference) {
+            if ($reference_node = entity_load_single($field['settings']['target_type'], $reference['target_id'])) {
+              $reference['target_id'] = i18n_entityreference_entityreference_translate_field($reference_node, $reference['target_id'], $context['langcode']);
+            }
+          }
+        }
+      }
+    }
+  }
+}

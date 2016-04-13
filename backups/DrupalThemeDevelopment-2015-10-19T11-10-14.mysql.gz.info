@@ -1,0 +1,8 @@
+filename = "DrupalThemeDevelopment-2015-10-19T11-10-14"
+description = ""
+datestamp = "1445249417"
+generator = "Backup and Migrate (http://drupal.org/project/backup_migrate)"
+generatorversion = "7.x-2.x"
+sites[0][version] = "7.40"
+sites[0][name] = "Drupal Theme Development"
+sites[0][url] = "http://dr2omnia-diy4phantomjs.rhcloud.com/en"
