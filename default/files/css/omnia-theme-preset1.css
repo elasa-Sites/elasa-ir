@@ -761,7 +761,7 @@ button.btn.btn-mini, input[type="submit"].btn.btn-mini {
 .testimonial .testimonial-author {
   margin: -1px 0 0 0;
   padding: 15px 0 15px 60px;
-  background: url(http://www.elasa.ir/sites/all/themes/omnia/images/bg-testimonial.png) no-repeat 20px 0px;
+  background: url(http://elasa.ir/sites/all/themes/omnia/images/bg-testimonial.png) no-repeat 20px 0px;
 }
 .testimonial .testimonial-author strong {
   font-weight: normal;
@@ -1280,7 +1280,7 @@ img.pull-right, .pull-right > img {
 .testimonial .testimonial-author {
   margin: -1px 0 0 0;
   padding: 15px 0 15px 60px;
-  background: url(http://www.elasa.ir/sites/all/themes/omnia/images/bg-testimonial.png) no-repeat 20px 0px;
+  background: url(http://elasa.ir/sites/all/themes/omnia/images/bg-testimonial.png) no-repeat 20px 0px;
 }
 .testimonial .testimonial-author strong {
   font-weight: normal;
@@ -2419,7 +2419,7 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
   display: none;
 }
 #section-header #block-search-form #edit-search-block-form--2 {
-  background: url(http://www.elasa.ir/sites/all/themes/omnia/images/bg_search.png) no-repeat;
+  background: url(http://elasa.ir/sites/all/themes/omnia/images/bg_search.png) no-repeat;
   background-position: left 3px;
   border: none;
   width: 24px;
@@ -2432,7 +2432,7 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
 }
 #section-header #block-search-form #edit-search-block-form--2:hover {
   width: 160px;
-  background: url(http://www.elasa.ir/sites/all/themes/omnia/images/bg_search_hover.png) no-repeat left 3px center #fff;
+  background: url(http://elasa.ir/sites/all/themes/omnia/images/bg_search_hover.png) no-repeat left 3px center #fff;
   background-color: #fff;
 }
 .get-social ul {
@@ -2615,11 +2615,11 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
   height: 55px !important;
 }
 .md-slide-wrap .md-arrow .md-arrow-left {
-  background-image: url("http://www.elasa.ir/sites/all/themes/omnia/images/arrowleft.png");
+  background-image: url("http://elasa.ir/sites/all/themes/omnia/images/arrowleft.png");
 }
 .md-slide-wrap .md-arrow .md-arrow-right {
   right: 0;
-  background-image: url("http://www.elasa.ir/sites/all/themes/omnia/images/arrowright.png");
+  background-image: url("http://elasa.ir/sites/all/themes/omnia/images/arrowright.png");
 }
 #section-showcase {
   padding: 55px 0px;
@@ -2870,7 +2870,7 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
   margin-left: 32px;
 }
 .rtl #section-header #block-search-form input[type="text"]:hover {
-  background: url(http://www.elasa.ir/sites/all/themes/omnia/images/bg_search_hover.png) no-repeat right 3px center #fff;
+  background: url(http://elasa.ir/sites/all/themes/omnia/images/bg_search_hover.png) no-repeat right 3px center #fff;
 }
 .rtl .sh-node-team .field-name-field-social-links .field-item a {
   padding-right: 10px;
@@ -2939,7 +2939,7 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
 }
 .rtl .testimonial .testimonial-author {
   padding: 15px 60px 15px 0px;
-  background: url("http://www.elasa.ir/sites/all/themes/omnia/images/bg-testimonial.png") no-repeat top right 36px;
+  background: url("http://elasa.ir/sites/all/themes/omnia/images/bg-testimonial.png") no-repeat top right 36px;
 }
 .rtl .testimonial .testimonial-author .pull-left {
   float: right !important;
