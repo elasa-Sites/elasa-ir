@@ -76,7 +76,8 @@ float: right;  direction: rtl
     display: flex;
 }
 body{
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'tahoma', sans-serif !important;
+	font-family: 'tahoma ' !important;
 }
 .container {
     max-width: 1170px;
