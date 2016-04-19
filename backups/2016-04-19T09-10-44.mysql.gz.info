@@ -1,0 +1,8 @@
+filename = "2016-04-19T09-10-44"
+description = ""
+datestamp = "1461053445"
+generator = "Backup and Migrate (http://drupal.org/project/backup_migrate)"
+generatorversion = "7.x-2.x"
+sites[0][version] = "7.40"
+sites[0][name] = "الکتروآسای بیهق"
+sites[0][url] = "http://elasa.ir/en"
