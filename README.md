@@ -5,6 +5,7 @@ this repo contain PHP folder files from ELASA.ir server , for merging in openshi
 #mv  ~/app-root/data/sites ~/app-root/data/sites0
 
 
+chmod 755 ~/app-root/data/sites/default
 
 rm -rf  ~/app-root/data/sites
 
